@@ -1,3 +1,7 @@
-export default function Home() {
-  return <h1>Home Page</h1>;
+import { Button } from "./_components/ui/button"
+
+const Home = () => {
+  return <Button>Teste</Button>
 }
+
+export default Home
