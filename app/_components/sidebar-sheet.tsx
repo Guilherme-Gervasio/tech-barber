@@ -1,11 +1,18 @@
-import { CalendarIcon, HomeIcon, LogOutIcon } from "lucide-react"
+import { CalendarIcon, HomeIcon, LogInIcon, LogOutIcon } from "lucide-react"
 import { Button } from "./ui/button"
 import { SheetClose, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
 import { quickSearchOption } from "../_constants/search"
-import { Avatar } from "./ui/avatar"
-import { AvatarImage } from "@radix-ui/react-avatar"
+// import { Avatar, AvatarImage } from "./ui/avatar"
 import Link from "next/link"
 import Image from "next/image"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogHeader,
+  DialogTrigger,
+} from "./ui/dialog"
 
 const SidebarSheet = () => {
   return (
@@ -14,15 +21,41 @@ const SidebarSheet = () => {
         <SheetTitle className="text-left">Menu</SheetTitle>
       </SheetHeader>
 
-      <div className="flex items-center gap-3 border-b border-solid py-5">
-        <Avatar>
+      <div className="flex items-center justify-between gap-3 border-b border-solid py-5">
+        <h2 className="font bold">Olá, facá seu login!</h2>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size="icon">
+              <LogInIcon />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="w-[90%]">
+            <DialogHeader>
+              <DialogTitle>Faça login na plataforma</DialogTitle>
+              <DialogDescription>
+                Conect-se usando sua conta do Google.
+              </DialogDescription>
+            </DialogHeader>
+            <Button variant="outline" className="gap-1 font-bold">
+              <Image
+                src="/google.svg"
+                width={18}
+                height={18}
+                alt="Google Login"
+              />
+              Google
+            </Button>
+          </DialogContent>
+        </Dialog>
+
+        {/* <Avatar>
           <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww" />
         </Avatar>
 
         <div>
           <p className="font-bold">Guilherme Gervásio</p>
           <p className="text-xs">guilherme.silv747@gmail.com</p>
-        </div>
+        </div> */}
       </div>
       <div className="flex flex-col gap-2 border-b border-solid py-5">
         <SheetClose asChild>
