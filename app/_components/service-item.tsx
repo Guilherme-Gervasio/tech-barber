@@ -16,7 +16,10 @@ import {
 import { Calendar } from "./ui/calendar"
 import { ptBR } from "date-fns/locale"
 import { useState } from "react"
-import { format } from "date-fns"
+import { format, set } from "date-fns"
+import { CreateBooking } from "../_actions/create-booking"
+import { useSession } from "next-auth/react"
+import { toast } from "sonner"
 
 interface ServiceItemProps {
   service: BarbershopService
@@ -48,16 +51,39 @@ const TIME_LIST = [
 ]
 
 const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
+  const { data } = useSession()
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
     undefined,
   )
+
+  console.log(data)
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDay(date)
   }
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time)
+  }
+  const handleCreateBooking = async () => {
+    try {
+      if (!selectedDay || !selectedTime) return
+      const hour = selectedTime.split(":")[0]
+      const minute = selectedTime.split(":")[1]
+      const newDate = set(selectedDay, {
+        hours: Number(hour),
+        minutes: Number(minute),
+      })
+      await CreateBooking({
+        serviceId: service.id,
+        userId: (data?.user as { id: string }).id,
+        date: newDate,
+      })
+      toast.success("Reserva criada com sucesso")
+    } catch (error) {
+      console.error(error)
+      toast.error("Erro ao criar reserva")
+    }
   }
 
   return (
@@ -175,9 +201,14 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
                     </Card>
                   </div>
                 )}
-                <SheetFooter className="px-5">
+                <SheetFooter className="mt-5 px-5">
                   <SheetClose asChild>
-                    <Button type="submit">Confirmar</Button>
+                    <Button
+                      onClick={handleCreateBooking}
+                      disabled={!selectedTime || !selectedDay}
+                    >
+                      Confirmar
+                    </Button>
                   </SheetClose>
                 </SheetFooter>
               </SheetContent>
