@@ -15,7 +15,7 @@ import { Calendar } from "./ui/calendar"
 import { ptBR } from "date-fns/locale"
 import { useEffect, useState } from "react"
 import { format, set } from "date-fns"
-import { CreateBooking } from "../_actions/create-booking"
+import { createBooking } from "../_actions/create-booking"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { getBookings } from "../_actions/get-bookings"
@@ -121,9 +121,8 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
         hours: Number(hour),
         minutes: Number(minute),
       })
-      await CreateBooking({
+      await createBooking({
         serviceId: service.id,
-        userId: (data?.user as { id: string }).id,
         date: newDate,
       })
       handleBookingSheetOpenChange()
