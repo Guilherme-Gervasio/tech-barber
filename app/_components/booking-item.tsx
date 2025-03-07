@@ -1,31 +1,53 @@
 import { Badge } from "lucide-react"
 import { Card, CardContent } from "./ui/card"
 import { Avatar, AvatarImage } from "./ui/avatar"
+import { Prisma } from "@prisma/client"
+import { format, isFuture } from "date-fns"
+import { ptBR } from "date-fns/locale"
 
-const BookingItem = () => {
+interface BookingItemProps {
+  booking: Prisma.BookingGetPayload<{
+    include: {
+      service: {
+        include: { barbershop: true }
+      }
+    }
+  }>
+}
+
+const BookingItem = ({ booking }: BookingItemProps) => {
+  const isConfirmed = isFuture(booking.date)
   return (
     <>
-      <h2 className="mt-6 text-xs font-bold uppercase text-gray-400">
-        Agendamentos
-      </h2>
-      <Card className="mt-6">
+      <Card className="min-w-[90%]">
         <CardContent className="flex justify-between p-0">
           <div className="flex flex-col gap-2 py-5 pl-5">
-            <Badge className="w-fit">Confirmado</Badge>
-            <h3 className="font-bold">Corte de Cabelo</h3>
+            <Badge
+              className="w-fit"
+              // variant={isConfirmed ? "default" : "secondary"}
+            >
+              {isConfirmed ? "Confirmado" : "finalizado"}
+            </Badge>
+            <h3 className="font-bold">{booking.service.name}</h3>
 
             <div className="flex items-center">
               <Avatar className="h-6 w-6">
-                <AvatarImage src="https://utfs.io/f/2118f76e-89e4-43e6-87c9-8f157500c333-b0ps0b.png" />
+                <AvatarImage src={booking.service.barbershop.imageUrl} />
               </Avatar>
-              <p className="text-sm">Barbearia FSW</p>
+              <p className="text-sm">{booking.service.barbershop.name}</p>
             </div>
           </div>
 
           <div className="flex flex-col items-center justify-center border-l-2 border-solid px-5">
-            <p className="text-sm">Fevereiro</p>
-            <p className="text-2xl">18</p>
-            <p className="text-sm">15:56</p>
+            <p className="text-sm capitalize">
+              {format(booking.date, "MMMM", { locale: ptBR })}
+            </p>
+            <p className="text-2xl">
+              {format(booking.date, "dd", { locale: ptBR })}
+            </p>
+            <p className="text-sm">
+              {format(booking.date, "HH:mm", { locale: ptBR })}
+            </p>
           </div>
         </CardContent>
       </Card>
