@@ -11,51 +11,26 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "./_lib/auth"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { getConfirmedBookings } from "./_data/get-confirmed-bookings"
 
 const Home = async () => {
-  const session: {
-    user?: {
-      id: string
-      name?: string | null
-      email?: string | null
-      image?: string | null
-    }
-  } | null = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions)
   const barbershops = await db.barbershop.findMany({})
   const popularBarbershops = await db.barbershop.findMany({
-    take: 7,
     orderBy: {
       name: "desc",
     },
   })
-
-  const confirmedBookings = session?.user
-    ? await db.booking.findMany({
-        where: {
-          userId: session?.user.id,
-          date: {
-            gte: new Date(),
-          },
-        },
-        include: {
-          service: {
-            include: {
-              barbershop: true,
-            },
-          },
-        },
-        orderBy: {
-          date: "asc",
-        },
-      })
-    : []
+  const confirmedBookings = await getConfirmedBookings()
 
   return (
     <div>
+      {/* header */}
       <Header />
       <div className="p-5">
+        {/* TEXTO */}
         <h2 className="text-xl font-bold">
-          Olá, {session?.user ? session.user.name : "bem Vindo"}
+          Olá, {session?.user ? session.user.name : "bem vindo"}!
         </h2>
         <p>
           <span className="capitalize">
@@ -67,24 +42,26 @@ const Home = async () => {
           </span>
         </p>
 
+        {/* BUSCA */}
         <div className="mt-6">
           <Search />
         </div>
 
+        {/* BUSCA RÁPIDA */}
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           {quickSearchOption.map((option) => (
             <Button
-              key={option.title}
               className="gap-2"
               variant="secondary"
+              key={option.title}
               asChild
             >
               <Link href={`/barbershops?service=${option.title}`}>
                 <Image
-                  alt={option.title}
                   src={option.imageUrl}
                   width={16}
                   height={16}
+                  alt={option.title}
                 />
                 {option.title}
               </Link>
@@ -92,19 +69,23 @@ const Home = async () => {
           ))}
         </div>
 
+        {/* IMAGEM */}
         <div className="relative mt-6 h-[150px] w-full">
           <Image
-            alt="agende nos melhores com FSW Barber"
+            alt="Agende nos melhores com FSW Barber"
             src="/banner-01.png"
             fill
             className="rounded-xl object-cover"
           />
         </div>
+
         {confirmedBookings.length > 0 && (
           <>
-            <h2 className="mt-6 text-xs font-bold uppercase text-gray-400">
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
               Agendamentos
             </h2>
+
+            {/* AGENDAMENTO */}
             <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
               {confirmedBookings.map((booking) => (
                 <BookingItem
@@ -115,7 +96,8 @@ const Home = async () => {
             </div>
           </>
         )}
-        <h2 className="mt-6 text-xs font-bold uppercase text-gray-400">
+
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
         </h2>
         <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
@@ -123,7 +105,8 @@ const Home = async () => {
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
         </div>
-        <h2 className="mt-6 text-xs font-bold uppercase text-gray-400">
+
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Populares
         </h2>
         <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
