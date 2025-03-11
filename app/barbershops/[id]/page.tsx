@@ -16,14 +16,10 @@ interface BarbershopPageProps {
 }
 
 const BarbershopPage = async ({ params }: BarbershopPageProps) => {
-  const { id } = params
-  if (!id) {
-    return notFound()
-  }
-
+  // chamar o meu banco de dados
   const barbershop = await db.barbershop.findUnique({
     where: {
-      id: id,
+      id: params.id,
     },
     include: {
       services: true,
