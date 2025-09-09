@@ -69,7 +69,7 @@ const Home = async () => {
           ))}
         </div>
 
-        {/* IMAGEM */}
+        {/* IMAGEM
         <div className="relative mt-6 h-[150px] w-full">
           <Image
             alt="Agende nos melhores com FSW Barber"
@@ -77,7 +77,7 @@ const Home = async () => {
             fill
             className="rounded-xl object-cover"
           />
-        </div>
+        </div> */}
 
         {confirmedBookings.length > 0 && (
           <>
